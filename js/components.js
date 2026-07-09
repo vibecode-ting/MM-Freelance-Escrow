@@ -24,7 +24,7 @@ function getStatusColor(status) {
   return STATUS_COLORS[status] || "bg-slate-100 text-slate-600 border-slate-200";
 }
 
-// ---- Navigation Bar ----
+// ---- Navigation Bar (Brutalist Ledger) ----
 function renderNavbar() {
   const user = getUser();
   const userData = getUserData();
@@ -36,50 +36,49 @@ function renderNavbar() {
     ? `
       <a href="#/dashboard" class="nav-link">${t("nav_dashboard")}</a>
       <a href="#/jobs" class="nav-link">${t("nav_jobs")}</a>
-      ${isAdmin ? `<a href="#/admin" class="nav-link text-amber-600">${t("nav_admin")}</a>` : ""}
-      <div class="flex items-center gap-3 ml-2">
-        <span class="text-sm text-slate-500 hidden sm:inline">${userData?.name || user.email}</span>
-        <button id="btn-logout" class="btn-ghost text-sm">${t("nav_logout")}</button>
-      </div>
+      ${isAdmin ? `<a href="#/admin" class="nav-link" style="color:var(--accent)">${t("nav_admin")}</a>` : ""}
+      <span style="color:var(--rule);margin:0 .25rem">·</span>
+      <span class="smallcaps hidden sm:inline" style="color:color-mix(in srgb,var(--ink) 55%,transparent)">${userData?.name || user.email}</span>
+      <button id="btn-logout" class="btn-sm btn-ghost">${t("nav_logout")}</button>
     `
     : `
       <a href="#/login" class="nav-link">${t("nav_login")}</a>
-      <a href="#/register" class="btn-primary-sm">${t("nav_register")}</a>
+      <a href="#/register" class="btn-sm btn--primary" style="margin-left:.5rem">${t("nav_register")}</a>
     `;
 
   const html = `
-    <nav class="fixed top-0 inset-x-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/60">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
-          <a href="#/" class="flex items-center gap-2.5 font-bold text-lg text-slate-800 hover:text-indigo-600 transition-colors">
-            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white text-sm font-black shadow-md shadow-indigo-200">M</div>
-            <span>${t("general_platform_name")}</span>
+    <nav style="position:fixed;top:0;inset-x:0;z-index:50;background:var(--bone);border-bottom:1px solid var(--rule)">
+      <div style="max-width:72rem;margin:0 auto;padding:0 clamp(1.5rem,4vw,3rem)">
+        <div style="display:flex;align-items:center;justify-content:space-between;height:4rem">
+          <a href="#/" style="font-family:var(--display);font-weight:700;font-size:1.15rem;color:var(--ink);letter-spacing:-.01em;display:flex;align-items:center;gap:.6rem">
+            <span style="font-family:var(--mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);border:1px solid var(--accent);padding:.15rem .45rem">MM</span>
+            <span>Escrow</span>
           </a>
-          <div class="hidden md:flex items-center gap-1">
+          <div class="hidden md:flex" style="align-items:center;gap:.25rem">
             <a href="#/" class="nav-link">${t("nav_home")}</a>
             ${navLinks}
-            <button id="btn-lang-toggle" class="ml-3 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-600 transition-all" title="${t("general_language")}">
+            <button id="btn-lang-toggle" class="btn-sm" style="background:transparent;border:1px solid var(--rule);color:color-mix(in srgb,var(--ink) 65%,transparent);margin-left:.75rem;font-family:var(--mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;cursor:pointer;padding:.3rem .6rem" title="${t("general_language")}">
               ${lang === "my" ? "🇲🇲 " + t("general_myanmar") : "🇬🇧 " + t("general_english")}
             </button>
           </div>
-          <button id="btn-mobile-menu" class="md:hidden p-2 rounded-lg hover:bg-slate-100 transition">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          <button id="btn-mobile-menu" class="md:hidden" style="padding:.5rem;cursor:pointer;background:transparent;border:none;color:var(--ink)">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
           </button>
         </div>
       </div>
       <!-- Mobile menu -->
-      <div id="mobile-menu" class="hidden md:hidden border-t border-slate-100 bg-white px-4 py-3 space-y-1">
-        <a href="#/" class="block px-3 py-2 rounded-lg hover:bg-slate-50">${t("nav_home")}</a>
+      <div id="mobile-menu" class="hidden md:hidden" style="border-top:1px solid var(--rule);background:var(--bone);padding:1rem 1.5rem;display:none;flex-direction:column;gap:.25rem">
+        <a href="#/" style="padding:.5rem 0;font-family:var(--mono);font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:color-mix(in srgb,var(--ink) 65%,transparent)">${t("nav_home")}</a>
         ${user ? `
-          <a href="#/dashboard" class="block px-3 py-2 rounded-lg hover:bg-slate-50">${t("nav_dashboard")}</a>
-          <a href="#/jobs" class="block px-3 py-2 rounded-lg hover:bg-slate-50">${t("nav_jobs")}</a>
-          ${isAdmin ? `<a href="#/admin" class="block px-3 py-2 rounded-lg hover:bg-slate-50 text-amber-600">${t("nav_admin")}</a>` : ""}
-          <button id="btn-logout-mobile" class="block w-full text-left px-3 py-2 rounded-lg hover:bg-red-50 text-red-600">${t("nav_logout")}</button>
+          <a href="#/dashboard" style="padding:.5rem 0;font-family:var(--mono);font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:color-mix(in srgb,var(--ink) 65%,transparent)">${t("nav_dashboard")}</a>
+          <a href="#/jobs" style="padding:.5rem 0;font-family:var(--mono);font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:color-mix(in srgb,var(--ink) 65%,transparent)">${t("nav_jobs")}</a>
+          ${isAdmin ? `<a href="#/admin" style="padding:.5rem 0;font-family:var(--mono);font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent)">${t("nav_admin")}</a>` : ""}
+          <button id="btn-logout-mobile" style="padding:.5rem 0;font-family:var(--mono);font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:#dc2626;background:none;border:none;cursor:pointer;text-align:left">${t("nav_logout")}</button>
         ` : `
-          <a href="#/login" class="block px-3 py-2 rounded-lg hover:bg-slate-50">${t("nav_login")}</a>
-          <a href="#/register" class="block px-3 py-2 rounded-lg hover:bg-slate-50">${t("nav_register")}</a>
+          <a href="#/login" style="padding:.5rem 0;font-family:var(--mono);font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:color-mix(in srgb,var(--ink) 65%,transparent)">${t("nav_login")}</a>
+          <a href="#/register" style="padding:.5rem 0;font-family:var(--mono);font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent)">${t("nav_register")}</a>
         `}
-        <button id="btn-lang-toggle-mobile" class="block w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50">
+        <button id="btn-lang-toggle-mobile" style="padding:.5rem 0;font-family:var(--mono);font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:color-mix(in srgb,var(--ink) 65%,transparent);background:none;border:none;cursor:pointer;text-align:left">
           ${lang === "my" ? "🇲🇲 " + t("general_myanmar") : "🇬🇧 " + t("general_english")}
         </button>
       </div>
@@ -110,25 +109,24 @@ function showToast(message, type = "info") {
   setTimeout(() => toast.remove(), 4000);
 }
 
-// ---- Stat Card ----
+// ---- Stat Card (Brutalist Ledger) ----
 function renderStatCard(label, value, icon = "", color = "indigo") {
   return `
-    <div class="bg-white rounded-2xl border border-slate-200/60 p-5 hover:shadow-lg hover:shadow-slate-100 transition-all duration-300">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-${color}-50 flex items-center justify-center text-${color}-600 text-lg">${icon}</div>
-        <div>
-          <p class="text-sm text-slate-500 font-medium">${label}</p>
-          <p class="text-2xl font-bold text-slate-800">${value}</p>
-        </div>
+    <div style="background:var(--bone);border:1px solid var(--rule);padding:clamp(1rem,2vw,1.5rem)">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:.5rem">
+        <span class="smallcaps">${label}</span>
+        <span style="font-family:var(--mono);font-size:.7rem;color:var(--accent)">${icon}</span>
       </div>
+      <p style="font-family:var(--mono);font-size:clamp(1.2rem,2.5vw,1.6rem);font-weight:500;color:var(--ink);margin-top:.25rem;letter-spacing:.01em">${value}</p>
     </div>
   `;
 }
 
-// ---- Status Badge ----
+// ---- Status Badge (Brutalist Ledger) ----
 function renderStatusBadge(status, size = "sm") {
-  const sizeClass = size === "lg" ? "px-3 py-1.5 text-sm" : "px-2.5 py-1 text-xs";
-  return `<span class="inline-flex items-center ${sizeClass} rounded-full font-semibold border ${getStatusColor(status)}">${status.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}</span>`;
+  const sizeClass = size === "lg" ? "padding:.4rem .8rem;font-size:.8rem" : "padding:.25rem .6rem;font-size:.7rem";
+  const color = STATUS_COLORS[status] || "slate";
+  return `<span style="display:inline-flex;align-items:center;${sizeClass};font-family:var(--mono);font-weight:500;text-transform:uppercase;letter-spacing:.08em;border:1px solid var(--rule);color:color-mix(in srgb,var(--ink) 70%,transparent)">${status.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}</span>`;
 }
 
 // ---- Workflow Steps ----

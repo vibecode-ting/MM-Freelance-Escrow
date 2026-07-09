@@ -6,91 +6,287 @@
     <title>MM Escrow — Myanmar Freelance Escrow Platform</title>
     <meta name="description" content="A trusted freelance escrow platform for Myanmar — secure payments, digital contracts, and local payment methods." />
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['"Inter"', '"Noto Sans Myanmar"', 'system-ui', 'sans-serif'],
-            },
-          },
-        },
-      };
-    </script>
-
-    <!-- Google Fonts: Inter + Noto Sans Myanmar -->
+    <!-- Fonts: Fraunces (display serif) + Archivo (body) + Spline Sans Mono (data) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Myanmar:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Archivo:wght@400;500;600&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>" />
 
     <style>
-      /* ---- Base ---- */
-      * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-      body { font-family: 'Inter', 'Noto Sans Myanmar', system-ui, sans-serif; }
+      /* ============================================================
+         BRUTALIST LEDGER — Design System
+         Bone · Ink · Accent · Rule · Wash
+         ============================================================ */
+      :root {
+        --bone: #F4F2ED;
+        --ink: #141414;
+        --accent: #11666a;
+        --rule: #D6D2C8;
+        --wash: #EAE7DF;
+        --display: 'Fraunces', serif;
+        --body: 'Archivo', sans-serif;
+        --mono: 'Spline Sans Mono', monospace;
+      }
 
-      /* ---- Input Field ---- */
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        background: var(--bone);
+        color: var(--ink);
+        font-family: var(--body);
+        font-size: 1rem;
+        line-height: 1.75;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        min-height: 100vh;
+      }
+      img { display: block; max-width: 100%; }
+      a { color: inherit; text-decoration: none; }
+
+      /* ---- Type Scale ---- */
+      .h-display {
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: clamp(2.5rem, 6.2vw, 4.5rem);
+        line-height: 1.06;
+        letter-spacing: -.018em;
+      }
+      .h-section {
+        font-family: var(--display);
+        font-weight: 400;
+        font-size: clamp(1.6rem, 3.2vw, 2.25rem);
+        line-height: 1.2;
+      }
+      .mono {
+        font-family: var(--mono);
+        font-size: .75rem;
+        letter-spacing: .06em;
+      }
+      .idx {
+        font-family: var(--mono);
+        font-size: .75rem;
+        color: color-mix(in srgb, var(--ink) 65%, transparent);
+      }
+      .idx--mark { color: var(--accent); font-weight: 500; }
+      .smallcaps {
+        font-size: .75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: .14em;
+        color: color-mix(in srgb, var(--ink) 65%, transparent);
+      }
+      .label-rail {
+        display: flex;
+        align-items: center;
+        gap: .7rem;
+      }
+      .label-rail::before {
+        content: "";
+        width: 1.6rem;
+        height: 2px;
+        background: var(--accent);
+        flex: none;
+      }
+      .lede {
+        color: color-mix(in srgb, var(--ink) 78%, transparent);
+        max-width: 68ch;
+      }
+      .num {
+        font-family: var(--mono);
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* ---- Rule System (the visual backbone) ---- */
+      .rule { border: 0; border-top: 1px solid var(--rule); }
+      .rule--ink { border-top-color: var(--ink); }
+      .rule--accent { border-top: 2px solid var(--accent); }
+
+      /* ---- Buttons: zero radius, border, invert on hover ---- */
+      .btn {
+        display: inline-block;
+        background: transparent;
+        color: var(--ink);
+        font-family: var(--mono);
+        font-weight: 500;
+        font-size: .8125rem;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        padding: .85rem 1.9rem;
+        border: 1px solid var(--ink);
+        border-radius: 0;
+        cursor: pointer;
+        transition: background .15s ease, color .15s ease;
+      }
+      .btn:hover { background: var(--ink); color: var(--bone); }
+      .btn--primary {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+      .btn--primary:hover {
+        background: color-mix(in srgb, var(--accent) 82%, black);
+        border-color: color-mix(in srgb, var(--accent) 82%, black);
+        color: #fff;
+      }
+
+      /* ---- Link: accent underline sweep ---- */
+      .llink {
+        position: relative;
+        color: var(--accent);
+        font-weight: 500;
+      }
+      .llink::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -2px;
+        width: 100%;
+        height: 1px;
+        background: var(--accent);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform .25s ease;
+      }
+      .llink:hover::after { transform: scaleX(1); }
+
+      /* ---- Two-column label/content rows ---- */
+      .lrow {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 1.5rem 3rem;
+        padding: 2rem 0;
+        border-top: 1px solid var(--rule);
+      }
+      @media(max-width: 720px) { .lrow { grid-template-columns: 1fr; } }
+
+      /* ---- Porcelain Panel ---- */
+      .porcelain-panel {
+        background: var(--wash);
+        border: 1px solid rgba(20,20,20,.10);
+        padding: clamp(28px, 4vw, 52px);
+        color: var(--ink);
+      }
+      .porcelain-panel__label {
+        margin: 0 0 2rem;
+        font: 600 11px/1.2 var(--mono);
+        letter-spacing: .18em;
+        text-transform: uppercase;
+        color: rgba(20,20,20,.48);
+      }
+
+      /* ---- Scroll Reveal ---- */
+      .rise {
+        opacity: 0;
+        transform: translateY(14px);
+        transition: opacity .55s ease, transform .55s ease;
+      }
+      .rise.in { opacity: 1; transform: none; }
+      @media(prefers-reduced-motion: reduce) {
+        .rise { opacity: 1; transform: none; transition: none; }
+      }
+
+      /* ---- Focus ---- */
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+      }
+
+      /* ---- Velocity Rail ---- */
+      .sp-vrail {
+        overflow: hidden;
+        padding: 1.15rem 0;
+        border-block: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+      }
+      .sp-vrail-track {
+        display: flex;
+        width: max-content;
+        will-change: transform;
+      }
+      .sp-vrail-row {
+        display: flex;
+        align-items: center;
+        gap: 2.4rem;
+        padding-right: 2.4rem;
+        white-space: nowrap;
+        flex: none;
+      }
+      .sp-vrail-item {
+        font-family: var(--mono);
+        font-size: clamp(1.05rem, 2.2vw, 1.5rem);
+        font-weight: 500;
+        letter-spacing: -.01em;
+      }
+      .sp-vrail-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--sp-accent);
+        flex: none;
+      }
+      @media(prefers-reduced-motion: reduce) {
+        .sp-vrail-track { transform: none !important; }
+      }
+
+      /* ---- App-level Buttons (for SPA pages) ---- */
       .input-field {
         width: 100%;
         padding: 0.625rem 0.875rem;
-        border: 1px solid #e2e8f0;
-        border-radius: 0.75rem;
+        border: 1px solid var(--rule);
+        border-radius: 0;
+        font-family: var(--body);
         font-size: 0.875rem;
         background: #fff;
         outline: none;
         transition: all 0.2s;
       }
       .input-field:focus {
-        border-color: #6366f1;
-        box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+        border-color: var(--accent);
       }
       .input-field::placeholder { color: #94a3b8; }
 
-      /* ---- Buttons ---- */
       .btn-primary {
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 0.5rem;
         padding: 0.625rem 1.25rem;
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        background: var(--accent);
         color: #fff;
-        font-weight: 600;
-        font-size: 0.875rem;
-        border-radius: 0.75rem;
+        font-family: var(--mono);
+        font-weight: 500;
+        font-size: 0.8125rem;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        border-radius: 0;
         border: none;
         cursor: pointer;
         transition: all 0.2s;
-        box-shadow: 0 2px 8px rgba(99,102,241,0.25);
       }
       .btn-primary:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 16px rgba(99,102,241,0.35);
+        background: color-mix(in srgb, var(--accent) 82%, black);
       }
-      .btn-primary:active { transform: translateY(0); }
 
       .btn-primary-sm {
         display: inline-flex;
         align-items: center;
         gap: 0.375rem;
         padding: 0.5rem 1rem;
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        background: var(--accent);
         color: #fff;
-        font-weight: 600;
-        font-size: 0.8125rem;
-        border-radius: 0.625rem;
+        font-family: var(--mono);
+        font-weight: 500;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        border-radius: 0;
         border: none;
         cursor: pointer;
         transition: all 0.2s;
-        box-shadow: 0 2px 6px rgba(99,102,241,0.2);
       }
       .btn-primary-sm:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 3px 12px rgba(99,102,241,0.3);
+        background: color-mix(in srgb, var(--accent) 82%, black);
       }
 
       .btn-ghost {
@@ -99,37 +295,43 @@
         justify-content: center;
         gap: 0.5rem;
         padding: 0.625rem 1.25rem;
-        background: #f8fafc;
-        color: #475569;
-        font-weight: 600;
-        font-size: 0.875rem;
-        border-radius: 0.75rem;
-        border: 1px solid #e2e8f0;
+        background: transparent;
+        color: var(--ink);
+        font-family: var(--mono);
+        font-weight: 500;
+        font-size: 0.8125rem;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        border-radius: 0;
+        border: 1px solid var(--ink);
         cursor: pointer;
         transition: all 0.2s;
       }
       .btn-ghost:hover {
-        background: #f1f5f9;
-        border-color: #cbd5e1;
+        background: var(--ink);
+        color: var(--bone);
       }
 
       .btn-sm {
         padding: 0.375rem 0.75rem;
-        font-size: 0.8125rem;
-        border-radius: 0.5rem;
-        font-weight: 600;
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        border-radius: 0;
+        font-weight: 500;
         border: none;
         cursor: pointer;
         transition: all 0.2s;
       }
       .btn-sm.btn-primary {
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        background: var(--accent);
         color: #fff;
       }
       .btn-sm.btn-ghost {
-        background: #f8fafc;
-        color: #475569;
-        border: 1px solid #e2e8f0;
+        background: transparent;
+        color: var(--ink);
+        border: 1px solid var(--ink);
       }
       .btn-sm.btn-danger {
         background: #fef2f2;
@@ -140,39 +342,45 @@
       /* ---- Nav Link ---- */
       .nav-link {
         padding: 0.375rem 0.75rem;
-        font-size: 0.875rem;
+        font-family: var(--mono);
+        font-size: 0.75rem;
         font-weight: 500;
-        color: #64748b;
-        border-radius: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: color-mix(in srgb, var(--ink) 65%, transparent);
+        border-radius: 0;
         transition: all 0.2s;
         text-decoration: none;
+        position: relative;
       }
       .nav-link:hover {
-        color: #6366f1;
-        background: #f5f3ff;
+        color: var(--accent);
       }
+      .nav-link::after {
+        content: "";
+        position: absolute;
+        left: 0.75rem;
+        right: 0.75rem;
+        bottom: 0;
+        height: 1px;
+        background: var(--accent);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform .25s ease;
+      }
+      .nav-link:hover::after { transform: scaleX(1); }
 
       /* ---- Animations ---- */
-      @keyframes slide-in {
-        from { opacity: 0; transform: translateX(1rem); }
-        to { opacity: 1; transform: translateX(0); }
-      }
-      @keyframes scale-in {
-        from { opacity: 0; transform: scale(0.95); }
-        to { opacity: 1; transform: scale(1); }
-      }
       @keyframes fade-in {
         from { opacity: 0; transform: translateY(0.5rem); }
         to { opacity: 1; transform: translateY(0); }
       }
-      .animate-slide-in { animation: slide-in 0.3s ease-out; }
-      .animate-scale-in { animation: scale-in 0.2s ease-out; }
       .animate-fade-in { animation: fade-in 0.4s ease-out; }
 
       /* ---- Scrollbar ---- */
       ::-webkit-scrollbar { width: 6px; }
       ::-webkit-scrollbar-track { background: transparent; }
-      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+      ::-webkit-scrollbar-thumb { background: var(--rule); }
       ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
       /* ---- Line Clamp ---- */
@@ -182,9 +390,69 @@
         -webkit-box-orient: vertical;
         overflow: hidden;
       }
+
+      /* ---- Hero specific ---- */
+      .bl-hero {
+        padding: clamp(3.5rem, 9vh, 6rem) clamp(1.5rem, 5vw, 4rem) clamp(2.5rem, 6vh, 4rem);
+      }
+      .bl-hero__inner {
+        max-width: 60rem;
+        margin: 0 auto;
+      }
+      .bl-hero__letterhead {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: .6rem 1.5rem;
+      }
+      .bl-hero__headline {
+        max-width: 20ch;
+        margin: clamp(1.5rem, 4vh, 2.5rem) auto 0;
+        text-align: center;
+      }
+      .bl-hero__lede {
+        text-align: center;
+        margin: 1.25rem auto 0;
+      }
+      .bl-hero__cta {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 2rem;
+      }
+      .bl-hero__stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        background: var(--rule);
+        border: 1px solid var(--ink);
+        margin-top: clamp(1.5rem, 4vh, 2.25rem);
+      }
+      .bl-hero__stat {
+        background: var(--bone);
+        padding: clamp(1rem, 2vw, 1.5rem);
+        text-align: center;
+      }
+      .bl-hero__stat-value {
+        display: block;
+        font-family: var(--mono);
+        font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+        font-weight: 500;
+        color: var(--accent);
+        letter-spacing: .02em;
+      }
+      .bl-hero__stat-label {
+        display: block;
+        margin-top: .25rem;
+      }
+      @media(max-width: 560px) {
+        .bl-hero__stats { grid-template-columns: 1fr; }
+      }
     </style>
   </head>
-  <body class="bg-slate-50 text-slate-800 min-h-screen">
+  <body>
     <!-- Navbar Container -->
     <div id="navbar"></div>
 
@@ -196,5 +464,69 @@
 
     <!-- App Entry Point -->
     <script type="module" src="js/app.js"></script>
+
+    <!-- Scroll Reveal Observer -->
+    <script>
+    (function(){
+      var io=new IntersectionObserver(function(es){
+        es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});
+      },{threshold:.12});
+      document.querySelectorAll(".rise").forEach(function(el,i){
+        el.style.transitionDelay=Math.min(i%4*70,210)+"ms";
+        io.observe(el);
+      });
+    })();
+    </script>
+
+    <!-- Velocity Rail Script -->
+    <script>
+    (function(){
+      if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+      document.querySelectorAll('[data-standout-piece="velocity-rail"]').forEach(function(root){
+        var track=root.querySelector('.sp-vrail-track'),row=root.querySelector('.sp-vrail-row');
+        if(!track||!row)return;
+        var base=parseFloat(root.getAttribute('data-speed'))||42;
+        var W=row.getBoundingClientRect().width;
+        if(W<10)return;
+        var need=Math.ceil((window.innerWidth*2+W)/W);
+        for(var k=0;k<need;k++){
+          var c=row.cloneNode(true);
+          c.setAttribute('aria-hidden','true');
+          track.appendChild(c);
+        }
+        var pos=0,vel=0,skew=0,lastY=window.scrollY,lastT=performance.now();
+        var visible=true,raf=0,hover=false;
+        root.addEventListener('pointerenter',function(){hover=true;});
+        root.addEventListener('pointerleave',function(){hover=false;});
+        function frame(now){
+          raf=0;
+          if(!visible)return;
+          var dt=Math.min(64,now-lastT)/1000;
+          lastT=now;
+          var y=window.scrollY;
+          var raw=(y-lastY)/Math.max(dt,.001);
+          lastY=y;
+          vel+=(raw-vel)*.1;
+          var speed=(hover?10:base)+Math.min(900,Math.abs(vel))*.9;
+          pos=(pos+speed*dt)%W;
+          var targetSkew=Math.max(-5,Math.min(5,vel*.006));
+          skew+=(targetSkew-skew)*.12;
+          track.style.transform='translate3d(-'+pos.toFixed(2)+'px,0,0) skewX('+skew.toFixed(3)+'deg)';
+          raf=requestAnimationFrame(frame);
+        }
+        function wake(){if(visible&&!raf){lastT=performance.now();lastY=window.scrollY;raf=requestAnimationFrame(frame);}}
+        if('IntersectionObserver' in window){
+          new IntersectionObserver(function(es){
+            visible=es[0].isIntersecting;
+            wake();
+          },{rootMargin:'60px'}).observe(root);
+        }
+        wake();
+        window.addEventListener('resize',function(){
+          W=row.getBoundingClientRect().width||W;
+        },{passive:true});
+      });
+    })();
+    </script>
   </body>
 </html>
