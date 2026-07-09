@@ -1,49 +1,60 @@
 // ============================================================
 // auth.js — Firebase Auth logic: register, login, logout
+// Runs in demo mode when Firebase isn't configured
 // ============================================================
 
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {
-  doc,
-  setDoc,
-  getDoc,
-  serverTimestamp,
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { auth, db } from "./firebase-config.js";
+import { auth, db, isConfigured } from "./firebase-config.js";
 import { t } from "./languages.js";
+
+// Firebase SDK imports (only used when configured)
+let fbAuth, fbFirestore;
+if (isConfigured) {
+  fbAuth = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+  fbFirestore = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+}
+
+// Demo mode state
+const DEMO_USER = { uid: "demo-001", email: "demo@mm-escrow.com" };
+const DEMO_PROFILE = {
+  uid: "demo-001",
+  name: "Demo User",
+  role: "freelancer",
+  email: "demo@mm-escrow.com",
+  wallet: { balance: 150000, pendingWithdrawals: 0 },
+};
 
 let currentUser = null;
 let currentUserData = null;
 
 /**
  * Register a new user with role
- * @param {string} email
- * @param {string} password
- * @param {string} name
- * @param {'freelancer'|'hiring'} role
- * @param {string} skillLevel
- * @returns {Promise<{success: boolean, error?: string}>}
  */
 async function register(email, password, name, role, skillLevel) {
-  try {
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
+  if (!isConfigured) {
+    // Demo mode: simulate registration
+    currentUser = { uid: "demo-" + Date.now(), email };
+    currentUserData = {
+      uid: currentUser.uid,
+      name,
+      role,
       email,
-      password
-    );
+      skillLevel: role === "freelancer" ? skillLevel : null,
+      wallet: { balance: 0, pendingWithdrawals: 0 },
+    };
+    return { success: true };
+  }
+
+  try {
+    const { createUserWithEmailAndPassword } = fbAuth;
+    const { doc, setDoc, serverTimestamp } = fbFirestore;
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    // Write user profile to Firestore with immutable role
     await setDoc(doc(db, "users", user.uid), {
       uid: user.uid,
-      email: email,
-      name: name,
-      role: role,
+      email,
+      name,
+      role,
       skillLevel: role === "freelancer" ? skillLevel : null,
       paymentDetails: null,
       createdAt: serverTimestamp(),
@@ -54,17 +65,10 @@ async function register(email, password, name, role, skillLevel) {
   } catch (error) {
     let msg = t("general_error");
     switch (error.code) {
-      case "auth/email-already-in-use":
-        msg = t("auth_error_email_in_use");
-        break;
-      case "auth/invalid-email":
-        msg = t("auth_error_invalid_email");
-        break;
-      case "auth/weak-password":
-        msg = t("auth_error_weak_password");
-        break;
-      default:
-        msg = error.message;
+      case "auth/email-already-in-use": msg = t("auth_error_email_in_use"); break;
+      case "auth/invalid-email": msg = t("auth_error_invalid_email"); break;
+      case "auth/weak-password": msg = t("auth_error_weak_password"); break;
+      default: msg = error.message;
     }
     return { success: false, error: msg };
   }
@@ -72,28 +76,25 @@ async function register(email, password, name, role, skillLevel) {
 
 /**
  * Login with email and password
- * @param {string} email
- * @param {string} password
- * @returns {Promise<{success: boolean, error?: string}>}
  */
 async function login(email, password) {
+  if (!isConfigured) {
+    currentUser = DEMO_USER;
+    currentUserData = { ...DEMO_PROFILE, email };
+    return { success: true };
+  }
+
   try {
+    const { signInWithEmailAndPassword } = fbAuth;
     await signInWithEmailAndPassword(auth, email, password);
     return { success: true };
   } catch (error) {
     let msg = t("general_error");
     switch (error.code) {
-      case "auth/user-not-found":
-        msg = t("auth_error_user_not_found");
-        break;
-      case "auth/wrong-password":
-        msg = t("auth_error_wrong_password");
-        break;
-      case "auth/invalid-email":
-        msg = t("auth_error_invalid_email");
-        break;
-      default:
-        msg = error.message;
+      case "auth/user-not-found": msg = t("auth_error_user_not_found"); break;
+      case "auth/wrong-password": msg = t("auth_error_wrong_password"); break;
+      case "auth/invalid-email": msg = t("auth_error_invalid_email"); break;
+      default: msg = error.message;
     }
     return { success: false, error: msg };
   }
@@ -103,23 +104,23 @@ async function login(email, password) {
  * Logout current user
  */
 async function logout() {
-  await signOut(auth);
+  if (isConfigured && auth) {
+    const { signOut } = fbAuth;
+    await signOut(auth);
+  }
   currentUser = null;
   currentUserData = null;
 }
 
 /**
  * Fetch user profile from Firestore
- * @param {string} uid
- * @returns {Promise<object|null>}
  */
 async function getUserProfile(uid) {
+  if (!isConfigured) return currentUserData;
   try {
+    const { doc, getDoc } = fbFirestore;
     const snap = await getDoc(doc(db, "users", uid));
-    if (snap.exists()) {
-      return snap.data();
-    }
-    return null;
+    return snap.exists() ? snap.data() : null;
   } catch {
     return null;
   }
@@ -127,9 +128,14 @@ async function getUserProfile(uid) {
 
 /**
  * Listen for auth state changes
- * @param {function} callback
  */
 function onAuthChange(callback) {
+  if (!isConfigured) {
+    // Demo mode: fire callback immediately with null
+    callback(null, null);
+    return;
+  }
+  const { onAuthStateChanged } = fbAuth;
   onAuthStateChanged(auth, async (user) => {
     currentUser = user;
     if (user) {
@@ -141,18 +147,7 @@ function onAuthChange(callback) {
   });
 }
 
-/**
- * Get current user object
- */
-function getUser() {
-  return currentUser;
-}
-
-/**
- * Get current user's Firestore profile
- */
-function getUserData() {
-  return currentUserData;
-}
+function getUser() { return currentUser; }
+function getUserData() { return currentUserData; }
 
 export { register, login, logout, getUserProfile, onAuthChange, getUser, getUserData };

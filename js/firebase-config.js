@@ -1,12 +1,12 @@
 // ============================================================
 // firebase-config.js — Firebase initialization & exports
+// Fails gracefully when config is placeholder
 // ============================================================
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+let app = null;
+let auth = null;
+let db = null;
 
-// TODO: Replace with your actual Firebase project config
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_PROJECT.firebaseapp.com",
@@ -16,8 +16,22 @@ const firebaseConfig = {
   appId: "YOUR_APP_ID",
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+const isConfigured = firebaseConfig.apiKey !== "YOUR_API_KEY";
 
-export { app, auth, db };
+if (isConfigured) {
+  try {
+    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+    const { getAuth } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+    const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+  } catch (e) {
+    console.warn("Firebase init failed:", e.message);
+  }
+} else {
+  console.warn("Firebase not configured — running in demo mode. Replace YOUR_API_KEY in js/firebase-config.js");
+}
+
+export { app, auth, db, isConfigured };
